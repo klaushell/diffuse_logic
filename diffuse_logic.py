@@ -7,9 +7,10 @@ distance = ctrl.Antecedent(np.arange(0, 11, 1), 'distance')
 speed = ctrl.Antecedent(np.arange(0, 11, 1), 'speed')
 crossing = ctrl.Consequent(np.arange(0, 11, 1), 'crossing')
 
-distance['far'] = fuzz.trimf(distance.universe, [0, 0, 5])
+# Low x = close, high x = far (peaks match the linguistic labels)
+distance['very_near'] = fuzz.trimf(distance.universe, [0, 0, 5])
 distance['near'] = fuzz.trimf(distance.universe, [0, 5, 10])
-distance['very_near'] = fuzz.trimf(distance.universe, [5, 10, 10])
+distance['far'] = fuzz.trimf(distance.universe, [5, 10, 10])
 
 speed['slow'] = fuzz.trimf(speed.universe, [0, 0, 5])
 speed['fast'] = fuzz.trimf(speed.universe, [0, 5, 10])
@@ -39,10 +40,23 @@ elif result <= 7.5:
 else:
     interpretation = 'running'
 
+# Illustrative tip % (0–30) from the same crisp output for linguistic bands
+tip = result * 3.0
+if tip <= 10:
+    tip_interpretation = 'low tip'
+elif tip <= 20:
+    tip_interpretation = 'medium tip'
+else:
+    tip_interpretation = 'high tip'
+
 print('Result:', result)
 print('Interpretation:', interpretation)
+print('Tip (%):', tip)
+print('Tip interpretation:', tip_interpretation)
 
-distance.view()
-speed.view()
-crossing.view()
+# Pass the real simulation — otherwise skfuzzy uses an empty ControlSystem and
+# plots never reflect your inputs or aggregated output.
+distance.view(simulation)
+speed.view(simulation)
+crossing.view(simulation)
 plt.show()
